@@ -92,7 +92,7 @@ fun UpdateScreen(){
             }
             Spacer(modifier = Modifier.height(16.dp))
             samplechannel.forEach {
-                ChannelItemDesign(channel = it)
+                 ChannelItemDesign(channel = it)
             }
         }
     }

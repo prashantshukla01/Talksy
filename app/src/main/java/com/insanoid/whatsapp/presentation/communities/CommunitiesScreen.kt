@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -49,6 +51,11 @@ fun communitiesScreen(){
     var showmenu by remember {
         mutableStateOf(false)
     }
+    val sampleCommunities = listOf(
+        Communities(image = R.drawable.img, name = "Tech Enthusiast", memberCount = "240 members"),
+        Communities(image = R.drawable.meta, name = "Know your Surrounding", memberCount = "640 members"),
+        Communities(image = R.drawable.img, name = "PhotoGraphy Lover", memberCount = "245 members")
+    )
     Scaffold(topBar={
         Box(modifier = Modifier.fillMaxWidth()) {
             Column {
@@ -138,6 +145,12 @@ fun communitiesScreen(){
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
+
+            LazyColumn {
+                items(sampleCommunities){
+                    CommunityItemDesign(communities = it)
+                }
+            }
         }
     }
 
