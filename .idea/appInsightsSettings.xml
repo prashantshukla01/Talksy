@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.insanoid.whatsapp" />
+                  <option name="mobileSdkAppId" value="1:245501186065:android:14e6b5f033593dddc661b0" />
+                  <option name="projectId" value="chattingapp-6725a" />
+                  <option name="projectNumber" value="245501186065" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

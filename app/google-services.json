@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "245501186065",
+    "project_id": "chattingapp-6725a",
+    "storage_bucket": "chattingapp-6725a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245501186065:android:14e6b5f033593dddc661b0",
+        "android_client_info": {
+          "package_name": "com.insanoid.whatsapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrgJruTx2GzxmRkfpw4MuRvpyyRRyKmp4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
