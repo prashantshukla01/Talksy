@@ -24,4 +24,7 @@ sealed class Routes {
     @Serializable
     data object CallScreen: Routes()
 
+    @Serializable
+    data object UserProfileSetScreen: Routes()
+
 }

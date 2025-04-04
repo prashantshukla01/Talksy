@@ -8,6 +8,7 @@ import com.insanoid.whatsapp.presentation.Callscreen.CallScreen
 import com.insanoid.whatsapp.presentation.communities.Communities
 import com.insanoid.whatsapp.presentation.communities.communitiesScreen
 import com.insanoid.whatsapp.presentation.homescreen.HomeScreen
+import com.insanoid.whatsapp.presentation.profile.UserProfileSetScreen
 import com.insanoid.whatsapp.presentation.splashscreen.SplashScreen
 import com.insanoid.whatsapp.presentation.updatescreen.UpdateScreen
 import com.insanoid.whatsapp.presentation.userregistrationscreen.UserRegistrationScreen
@@ -24,7 +25,7 @@ fun WhatsAppNavigationSystem() {
             WelcomeScreen(navController)
         }
         composable<Routes.UserRegistrationScreen> {
-            UserRegistrationScreen()
+            UserRegistrationScreen( navController)
         }
         composable<Routes.HomeScreen> {
             HomeScreen()
@@ -37,6 +38,9 @@ fun WhatsAppNavigationSystem() {
         }
         composable<Routes.CallScreen> {
             CallScreen()
+        }
+        composable<Routes.UserProfileSetScreen> {
+            UserProfileSetScreen(navHostController = navController)
         }
     }
 }

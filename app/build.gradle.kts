@@ -73,9 +73,12 @@ dependencies {
     implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
 
           // Use latest BOM version
-    implementation ("com.google.firebase:firebase-auth-ktx:22.1.1")
-    implementation ("com.google.firebase:firebase-firestore-ktx:24.10.0")
+    implementation ("com.google.firebase:firebase-auth-ktx:23.2.0")
 // Firebase Authentication
+
+    //coil dependency used to import image for profile
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
 
 
 
