@@ -1,6 +1,7 @@
 package com.insanoid.whatsapp.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -12,6 +13,7 @@ import com.insanoid.whatsapp.presentation.profile.UserProfileSetScreen
 import com.insanoid.whatsapp.presentation.splashscreen.SplashScreen
 import com.insanoid.whatsapp.presentation.updatescreen.UpdateScreen
 import com.insanoid.whatsapp.presentation.userregistrationscreen.UserRegistrationScreen
+import com.insanoid.whatsapp.presentation.viewmodel.BaseViewModel
 import com.insanoid.whatsapp.presentation.welcomescreen.WelcomeScreen
 
 @Composable
@@ -28,16 +30,17 @@ fun WhatsAppNavigationSystem() {
             UserRegistrationScreen( navController)
         }
         composable<Routes.HomeScreen> {
-            HomeScreen()
+            val baseViewModel: BaseViewModel = hiltViewModel()
+            HomeScreen(navController,baseViewModel)
         }
         composable<Routes.UpdateScreen> {
-            UpdateScreen()
+            UpdateScreen(navController)
         }
         composable<Routes.CommunitiesScreen> {
-            communitiesScreen()
+            communitiesScreen(navController)
         }
         composable<Routes.CallScreen> {
-            CallScreen()
+            CallScreen(navController)
         }
         composable<Routes.UserProfileSetScreen> {
             UserProfileSetScreen(navHostController = navController)

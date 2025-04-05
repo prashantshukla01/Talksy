@@ -42,17 +42,17 @@ fun WelcomeScreen(navHostController: NavHostController){
             Text(text = "Welcome to WhatsApp", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(24.dp))
         Row {
-            Text(text = "Read our ", color= Color.Gray)
-            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Read our", color= Color.Gray)
+            Spacer(modifier = Modifier.width(4.dp))
             Text(text = "Privacy Policy", color = colorResource(id=R.color.light_green))
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             Text(text = "Tap 'Agree and Continue' to", color= Color.Gray)
             Text(text = "", color = colorResource(id=R.color.light_green))
         }
 
         Row {
             Text(text= "Accept the ", color= Color.Gray)
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             Text(text = "Terms and Services", color = colorResource(id=R.color.light_green))
         }
         Spacer(modifier = Modifier.height(24.dp))

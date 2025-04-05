@@ -3,13 +3,9 @@ package com.insanoid.whatsapp.presentation.updatescreen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FloatingActionButton
@@ -23,15 +19,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.insanoid.whatsapp.R
 import com.insanoid.whatsapp.presentation.bottomnavigate.BottomNavigation
+import com.insanoid.whatsapp.presentation.navigation.Routes
 
 @Composable
-@Preview(showSystemUi = true)
-fun UpdateScreen(){
+fun UpdateScreen(navHostController: NavHostController){
     val scrollState= rememberScrollState()
 
     val samplestatus= listOf(
@@ -53,7 +49,17 @@ fun UpdateScreen(){
             Icon(painter = painterResource(id= R.drawable.baseline_photo_camera_24), contentDescription = null)
         }
     },
-        bottomBar = { BottomNavigation() },
+        bottomBar = {
+            BottomNavigation(navHostController, selectedItem = 0, onClick = {index->
+                when(index){
+                    0-> {navHostController.navigate(Routes.HomeScreen)}
+                    1-> {navHostController.navigate(Routes.UpdateScreen)}
+                    2-> {navHostController.navigate(Routes.CommunitiesScreen)}
+                    3-> {navHostController.navigate(Routes.CallScreen)}
+                }
+
+            })
+        },
         topBar = {
             TopBar()
         }

@@ -152,7 +152,8 @@ fun UserRegistrationScreen( navHostController: NavHostController,phoneAuthViewMo
                             colors = TextFieldDefaults.colors(
                                 unfocusedContainerColor = Color.Transparent,
                                 focusedContainerColor = Color.Transparent,
-                                focusedIndicatorColor = colorResource(R.color.light_green)
+                                focusedIndicatorColor = colorResource(R.color.light_green),
+                                cursorColor = Color.Green
 
                             )
                         )
@@ -165,7 +166,8 @@ fun UserRegistrationScreen( navHostController: NavHostController,phoneAuthViewMo
                             colors = TextFieldDefaults.colors(
                                 unfocusedContainerColor = Color.Transparent,
                                 focusedContainerColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent
+                                focusedIndicatorColor = Color.Transparent,
+                                cursorColor = Color.Green
                             )
                         )
                     }
@@ -214,7 +216,8 @@ fun UserRegistrationScreen( navHostController: NavHostController,phoneAuthViewMo
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = Color.Transparent,
                             focusedContainerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent
+                            focusedIndicatorColor = Color.Transparent,
+                            cursorColor = Color.Green
                         )
                     )
                     Spacer(modifier = Modifier.height(32.dp))
