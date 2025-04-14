@@ -39,10 +39,10 @@ fun WelcomeScreen(navHostController: NavHostController){
             contentDescription = null,
             modifier = Modifier.size(300.dp)
         )
-            Text(text = "Welcome to WhatsApp", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text(text = "Welcome to Talksy!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(24.dp))
         Row {
-            Text(text = "Read our", color= Color.Gray)
+            Text(text = "Read", color= Color.Gray)
             Spacer(modifier = Modifier.width(4.dp))
             Text(text = "Privacy Policy", color = colorResource(id=R.color.light_green))
             Spacer(modifier = Modifier.width(4.dp))

@@ -90,10 +90,10 @@ fun UserRegistrationScreen( navHostController: NavHostController,phoneAuthViewMo
         Spacer(modifier = Modifier.padding(16.dp))
 
         Row {
-            Text(text = "Whatsapp will need to verify your number")
+            Text(text = "Whatsapp will need to verify")
             Spacer(modifier = Modifier.padding(4.dp))
 
-            Text(text = "whats", color = colorResource(R.color.dark_green))
+            Text(text = "what's", color = colorResource(R.color.dark_green))
         }
         Text(text = "your number?", color = colorResource(R.color.dark_green))
 

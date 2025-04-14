@@ -134,7 +134,7 @@ fun HomeScreen(navHostController: NavHostController, homeBaseViewModel: BaseView
 
                 } else {
                     Text(
-                        "Whatsapp",
+                        "Talksy",
                         fontSize = 28.sp,
                         color = colorResource(R.color.light_green),
                         modifier = Modifier
