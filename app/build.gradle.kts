@@ -74,10 +74,20 @@ dependencies {
 
           // Use latest BOM version
     implementation ("com.google.firebase:firebase-auth-ktx:23.2.0")
+    implementation ("androidx.compose.ui:ui:1.7.8")
 // Firebase Authentication
 
     //coil dependency used to import image for profile
     implementation("io.coil-kt:coil-compose:2.7.0")
+
+    implementation ("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation ("androidx.compose.ui:ui-text:1.7.8")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.7.8")
+    implementation ("androidx.compose.ui:ui-tooling-preview:1.7.8")
+    implementation ("androidx.compose:compose-bom:2025.04.00")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+
+
 
 
 

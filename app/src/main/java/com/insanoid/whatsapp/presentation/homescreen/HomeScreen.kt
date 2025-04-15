@@ -202,14 +202,8 @@ fun HomeScreen(navHostController: NavHostController, homeBaseViewModel: BaseView
                                     navHostController.navigate(Routes.SettingScreen)})
 
                             }
-
-
-                            }
-
+                        }
                     }
-
-
-
                 }
                 
             }
@@ -226,7 +220,8 @@ fun HomeScreen(navHostController: NavHostController, homeBaseViewModel: BaseView
                     ChatDesign(chatlistModel= chat, onClick = {
                         navHostController.navigate(
                             Routes.ChatScreen.createRoute(
-                                phoneNumber = chat.phoneNumber ?: "OK"
+                                chat.name ?: "Unknown",
+                                chat.phoneNumber ?: ""
                             )
                         )
                     },baseViewModel= homeBaseViewModel)

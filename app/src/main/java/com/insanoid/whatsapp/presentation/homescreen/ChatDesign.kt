@@ -2,6 +2,7 @@ package com.insanoid.whatsapp.presentation.homescreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,16 +32,20 @@ import com.insanoid.whatsapp.presentation.viewmodel.BaseViewModel
 @Composable
 fun ChatDesign(
     chatlistModel: chatlistModel,
-    onClick:()-> Unit,
-    baseViewModel: BaseViewModel){
+    onClick: () -> Unit,
+    baseViewModel: BaseViewModel
+) {
     Row(
-        modifier = Modifier.Companion.padding(8.dp),
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val profileImage = chatlistModel?.profileImage
-        val bitmap = remember{
-            profileImage?.let{baseViewModel.base64ToBitmap(it)}
+        val profileImage = chatlistModel.profileImage
+        val bitmap = remember {
+            profileImage?.let { baseViewModel.base64ToBitmap(it) }
         }
+
         Image(
             painter = if (bitmap != null) {
                 rememberImagePainter(bitmap)
@@ -48,34 +53,40 @@ fun ChatDesign(
                 painterResource(R.drawable.profile_placeholder)
             },
             contentDescription = null,
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .size(60.dp)
                 .background(color = Color.Gray)
                 .clip(shape = CircleShape),
-            contentScale = ContentScale.Companion.Crop
+            contentScale = ContentScale.Crop
         )
-        Spacer(modifier = Modifier.Companion.height(12.dp))
 
-        Column (modifier = Modifier
-            .padding(start = 8.dp)
-            .weight(1f)){
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Column(
+            modifier = Modifier
+                .padding(start = 8.dp)
+                .weight(1f)
+        ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.Companion.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = chatlistModel.name?:"Unknown",
+                    text = chatlistModel.name ?: "Unknown",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Companion.Bold
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = chatlistModel.time?:"--:--", color = Color.Gray
+                    text = chatlistModel.time ?: "--:--",
+                    color = Color.Gray
                 )
             }
-            Spacer(modifier = Modifier.Companion.height(4.dp))
+
+            Spacer(modifier = Modifier.height(4.dp))
+
             Text(
-                text = chatlistModel.message?:"message",
-                color = Color.Companion.Gray,
+                text = chatlistModel.message ?: "message",
+                color = Color.Gray,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold
             )
