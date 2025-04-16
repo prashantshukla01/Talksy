@@ -47,6 +47,9 @@ import com.insanoid.whatsapp.presentation.bottomnavigation.chat_box.chatlistMode
 import com.insanoid.whatsapp.presentation.communities.communitiesScreen
 import com.insanoid.whatsapp.presentation.navigation.Routes
 import com.insanoid.whatsapp.presentation.viewmodel.BaseViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun HomeScreen(navHostController: NavHostController, homeBaseViewModel: BaseViewModel){
@@ -57,7 +60,7 @@ fun HomeScreen(navHostController: NavHostController, homeBaseViewModel: BaseView
 
     val userId= FirebaseAuth.getInstance().currentUser?.uid
     if (userId != null) {
-        LaunchedEffect(Unit) {
+        LaunchedEffect(userId) {
             homeBaseViewModel.getChatForUser(userId) { chats ->
 
             }
@@ -247,6 +250,8 @@ fun AddUserPopup(
         mutableStateOf<chatlistModel?>(null)
     }
 
+
+
     Column (modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp)){
@@ -265,14 +270,21 @@ fun AddUserPopup(
         )
         Row {
             Button(onClick = {
-                isSearching = true
-                baseViewModel.serachUserByPhoneNumber(phoneNumber){user->
-                    isSearching=false
-                    if(user!=null){
-                        userFound=user
-                    }
-                    else{
-                        userFound=null
+                if (phoneNumber.isNotBlank()) {
+                    baseViewModel.serachUserByPhoneNumber(phoneNumber) { user ->
+                        user?.let {
+                            // Create new chat with current timestamp
+                            val newChat = chatlistModel(
+                                name = it.name,
+                                phoneNumber = it.phoneNumber,
+                                time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date()),
+                                message = "Chat started"
+                            )
+                            onUserAdd(newChat)
+                            onDismiss()
+                        } ?: run {
+                            // Show error message
+                        }
                     }
                 }
             }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(colorResource(R.color.light_green))){

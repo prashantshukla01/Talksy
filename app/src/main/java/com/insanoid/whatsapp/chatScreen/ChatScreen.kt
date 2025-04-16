@@ -68,6 +68,15 @@ fun ChatScreen(
         }
     }
 
+    LaunchedEffect(contactPhone) {
+        viewModel.getMessages(
+            senderId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
+            receiverId = contactPhone
+        ) { newMessage ->
+            // Handle new message (already added to state)
+        }
+    }
+
 
     @Composable
     fun ChatTopAppBar(

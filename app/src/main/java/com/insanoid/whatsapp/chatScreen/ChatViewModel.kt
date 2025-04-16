@@ -34,7 +34,7 @@ class ChatViewModel @Inject constructor(
 
         currentUserId?.let { uid ->
             val chatPath = getChatPath(uid, contactPhone)
-            messagesRef = database.getReference("messages/$chatPath")
+            messagesRef = database.getReference("chats/$chatPath/messages")
             setupMessageListener()
         }
     }
@@ -77,14 +77,29 @@ class ChatViewModel @Inject constructor(
     }
 
     fun sendMessage(message: Message) {
-        val newRef = messagesRef?.push()
-        newRef?.setValue(
-            message.copy( // Now works with key parameter
-                newRef.key ?: "",
-                timestamp = System.currentTimeMillis()
-            )
-        )
+        val chatId = listOf(message.senderId, message.receiverId).sorted().joinToString("_")
+        val messageRef = database.reference.child("chats/$chatId/messages").push()
+
+        message.key = messageRef.key ?: ""
+        messageRef.setValue(message)
     }
+    fun getMessages(senderId: String, receiverId: String, onMessageReceived: (Message) -> Unit) {
+        val chatId = listOf(senderId, receiverId).sorted().joinToString("_")
+
+        messagesRef?.child(chatId)?.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildKey: String?) {
+                snapshot.getValue(Message::class.java)?.let {
+                    onMessageReceived(it.copy(key = snapshot.key ?: ""))
+                }
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildKey: String?) {}
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildKey: String?) {}
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
 
     override fun onCleared() {
         eventListener?.let {

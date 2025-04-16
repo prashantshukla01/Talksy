@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
@@ -29,6 +30,8 @@ import java.io.InputStream
 
 class BaseViewModel: ViewModel() {
 
+    private val database = Firebase.database
+    private val messagesRef = database.reference.child("messages")
 
 
     fun serachUserByPhoneNumber(phoneNumber: String, callback: (chatlistModel?) -> Unit) {
@@ -68,19 +71,17 @@ class BaseViewModel: ViewModel() {
             })
     }
     fun getChatForUser(userId: String, callback: (List<chatlistModel>) -> Unit) {
-        val chatref = FirebaseDatabase.getInstance().getReference("users/$userId/chats")
-        chatref.orderByChild("userId").equalTo(userId)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val chatList = mutableListOf<chatlistModel>()
-                    for (childSnapshot in snapshot.children) {
-                        val chat = childSnapshot.getValue(chatlistModel::class.java)
-                        if (chat != null) {
-                            chatList.add(chat)
-                        }
+        val chatsReference = FirebaseDatabase.getInstance().getReference("users/$userId/chats")
+        chatsReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val chats = mutableListOf<chatlistModel>()
+                for (child in snapshot.children) {
+                    child.getValue(chatlistModel::class.java)?.let {
+                        chats.add(it.copy( child.key ?: ""))
                     }
-                    callback(chatList)
                 }
+                _chatList.value = chats
+            }
 
                 override fun onCancelled(error: DatabaseError) {
                     Log.e("BaseViewModel", "Error fetching chat: ${error.message}")
@@ -91,6 +92,7 @@ class BaseViewModel: ViewModel() {
     }
     private val _chatList = MutableStateFlow<List<chatlistModel>>(emptyList())
     val chatList: StateFlow<List<chatlistModel>> = _chatList
+    private var chatsReference: DatabaseReference? = null
 
     init {
             loadChatData()
@@ -121,6 +123,7 @@ class BaseViewModel: ViewModel() {
     }
     fun addChat(newChat: chatlistModel) {
         val currentUser = FirebaseAuth.getInstance().currentUser?.uid
+        val newRef = FirebaseDatabase.getInstance().getReference("users/$currentUser/chats").push()
         if (currentUser != null) {
             // Add to both user-specific path and root chats
             val rootChatRef = FirebaseDatabase.getInstance().getReference("chats")
