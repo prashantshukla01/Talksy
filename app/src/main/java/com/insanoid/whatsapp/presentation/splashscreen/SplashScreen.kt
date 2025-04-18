@@ -2,6 +2,7 @@ package com.insanoid.whatsapp.presentation.splashscreen
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,10 +38,12 @@ fun SplashScreen(navHostController: NavHostController){
 
     }
 
-    Box(modifier = Modifier.fillMaxSize()){
-        Image(painter = painterResource(id = R.drawable.whatsapp_icon),
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(color = colorResource(R.color.white))){
+        Image(painter = painterResource(id = R.drawable.talksy),
             contentDescription = null,
-            modifier = Modifier.size(80.dp )
+            modifier = Modifier.size(288.dp )
                 .align(Alignment.Center)
         )
         Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally ) {

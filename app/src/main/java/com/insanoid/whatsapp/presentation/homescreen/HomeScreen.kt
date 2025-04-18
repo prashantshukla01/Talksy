@@ -73,7 +73,7 @@ fun HomeScreen(navHostController: NavHostController, homeBaseViewModel: BaseView
             onClick = {
                 showPopup= true
             },
-            containerColor = colorResource(id = R.color.light_green),
+            containerColor = colorResource(id = R.color.dark_green),
             modifier = Modifier.size(64.dp),
             contentColor = Color.White)
         {
@@ -99,7 +99,7 @@ fun HomeScreen(navHostController: NavHostController, homeBaseViewModel: BaseView
         Column(
             modifier = Modifier
                 .padding(it)
-                .background(color = Color.White)
+                .background(color =colorResource(R.color.white))
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             Box(modifier = Modifier.fillMaxWidth()) {

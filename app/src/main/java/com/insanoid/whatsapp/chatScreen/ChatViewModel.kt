@@ -9,6 +9,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.insanoid.whatsapp.chatScreen.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +43,7 @@ class ChatViewModel @Inject constructor(
     private fun setupMessageListener() {
         eventListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                Log.d("ChatDebug", "New message added: ${snapshot.value}")
                 viewModelScope.launch {
                     snapshot.getValue(Message::class.java)?.let { message ->
                         // Fixed key assignment
@@ -80,23 +82,28 @@ class ChatViewModel @Inject constructor(
         val chatId = listOf(message.senderId, message.receiverId).sorted().joinToString("_")
         val messageRef = database.reference.child("chats/$chatId/messages").push()
 
-        message.key = messageRef.key ?: ""
-        messageRef.setValue(message)
-    }
-    fun getMessages(senderId: String, receiverId: String, onMessageReceived: (Message) -> Unit) {
-        val chatId = listOf(senderId, receiverId).sorted().joinToString("_")
+        val msgWithKey = message.copy(key = messageRef.key ?: "")
+        _messages.value = _messages.value + msgWithKey
 
-        messagesRef?.child(chatId)?.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildKey: String?) {
-                snapshot.getValue(Message::class.java)?.let {
-                    onMessageReceived(it.copy(key = snapshot.key ?: ""))
+        // ✅ 2. Send to Firebase
+        messageRef.setValue(msgWithKey)
+    }
+    fun getMessages(senderId: String, receiverId: String) {
+        val chatId = listOf(senderId, receiverId).sorted().joinToString("_")
+        messagesRef = database.reference.child("chats/$chatId/messages")
+
+
+        messagesRef?.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val messages = snapshot.children.mapNotNull {
+                    it.getValue(Message::class.java)?.copy(key = it.key ?: "")
                 }
+                _messages.value = messages.sortedBy { it.timestamp } // CHANGE 2: Add sorting
             }
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildKey: String?) {}
-            override fun onChildRemoved(snapshot: DataSnapshot) {}
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildKey: String?) {}
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Chat", "Messages error: ${error.message}")
+            }
         })
     }
 

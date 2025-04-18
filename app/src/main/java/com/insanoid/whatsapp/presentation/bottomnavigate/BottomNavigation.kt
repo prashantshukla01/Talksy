@@ -31,7 +31,7 @@ fun BottomNavigation(
         NavigationItem("Communities", R.drawable.baseline_groups_24, R.drawable.outline_groups_24),
         NavigationItem("Calls", R.drawable.telephone, R.drawable.outline_phone_24)
     )
-    NavigationBar(containerColor = Color.White, modifier = Modifier.height(80.dp)) {
+    NavigationBar(containerColor = Color.White, modifier = Modifier.height(104.dp)) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItem == index,
@@ -61,7 +61,9 @@ fun BottomNavigation(
                     Spacer(modifier = Modifier.width(4.dp))
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = colorResource(R.color.mint_green)
+                    indicatorColor = colorResource(R.color.white)
+
+
                 )
             )
         }

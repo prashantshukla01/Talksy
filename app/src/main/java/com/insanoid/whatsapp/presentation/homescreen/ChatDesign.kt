@@ -39,6 +39,7 @@ fun ChatDesign(
         modifier = Modifier
             .padding(8.dp)
             .clickable(onClick = onClick),
+
         verticalAlignment = Alignment.CenterVertically
     ) {
         val profileImage = chatlistModel.profileImage

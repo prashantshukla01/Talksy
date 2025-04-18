@@ -1,6 +1,7 @@
 package com.insanoid.whatsapp.presentation.updatescreen
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +45,7 @@ fun TopBar(){
         mutableStateOf(false)
     }
 
-    Box(modifier = Modifier.fillMaxWidth()){
+    Box(modifier = Modifier.fillMaxWidth().background(color = colorResource( R.color.light_green))){
         Column {
             Row(modifier = Modifier.padding(top = 40.dp))  {
                 if (isSearching){

@@ -57,7 +57,7 @@ fun ChatScreen(
     navController: NavHostController,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
-    val messages by viewModel.messages.collectAsState(initial = emptyList())
+    val messages by viewModel.messages.collectAsState()
     var messageText by remember { mutableStateOf("") }
     val scrollState = rememberLazyListState()
 
@@ -68,13 +68,11 @@ fun ChatScreen(
         }
     }
 
-    LaunchedEffect(contactPhone) {
-        viewModel.getMessages(
-            senderId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
-            receiverId = contactPhone
-        ) { newMessage ->
-            // Handle new message (already added to state)
-        }
+    LaunchedEffect(Unit) { // CHANGE 1: Use Unit instead of contactPhone
+        viewModel.initializeChat(
+
+            contactPhone
+        )
     }
 
 
@@ -88,7 +86,7 @@ fun ChatScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .padding(16.dp),
+                .padding(40.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBackClick) {
@@ -140,7 +138,7 @@ fun ChatScreen(
                     state = scrollState,
                     contentPadding = PaddingValues(8.dp)
                 ) {
-                    items(messages) { message ->
+                    items(messages, key = { it.timestamp }) { message ->
                         MessageBubble(
                             message = message,
                             isCurrentUser = message.senderId == FirebaseAuth.getInstance().currentUser?.uid

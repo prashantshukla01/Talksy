@@ -76,7 +76,7 @@ fun UserRegistrationScreen( navHostController: NavHostController,phoneAuthViewMo
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.White)
+            .background(color = colorResource(R.color.white))
             .padding(48.dp), horizontalAlignment = Alignment.CenterHorizontally
     )
 

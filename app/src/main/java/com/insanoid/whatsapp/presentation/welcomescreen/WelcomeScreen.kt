@@ -2,12 +2,14 @@ package com.insanoid.whatsapp.presentation.welcomescreen
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,16 +33,16 @@ import com.insanoid.whatsapp.presentation.navigation.Routes
 
 @Composable
 fun WelcomeScreen(navHostController: NavHostController){
-    Column(modifier = Modifier.fillMaxSize(),
+    Column(modifier = Modifier.fillMaxSize().background(color = colorResource(R.color.white)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement =  Arrangement.Center
         ){
-        Image(painter = painterResource(id = R.drawable.whatsapp_sticker),
+        Image(painter = painterResource(id = R.drawable.talksysticker),
             contentDescription = null,
-            modifier = Modifier.size(300.dp)
+            modifier = Modifier.size(290.dp)
         )
-            Text(text = "Welcome to Talksy!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(24.dp))
+            Text(text = "Welcome to Talksy!", fontSize = 24.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(12.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         Row {
             Text(text = "Read", color= Color.Gray)
             Spacer(modifier = Modifier.width(4.dp))
