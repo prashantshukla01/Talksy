@@ -53,12 +53,10 @@ import java.util.Locale
 
 @Composable
 fun HomeScreen(navHostController: NavHostController, homeBaseViewModel: BaseViewModel){
-    var showPopup by remember {
-        mutableStateOf(false)
-    }
+    var showPopup by remember { mutableStateOf(false) }
     val chatData by homeBaseViewModel.chatList.collectAsState()
-
     val userId= FirebaseAuth.getInstance().currentUser?.uid
+
     if (userId != null) {
         LaunchedEffect(userId) {
             homeBaseViewModel.getChatForUser(userId) { chats ->
@@ -202,7 +200,18 @@ fun HomeScreen(navHostController: NavHostController, homeBaseViewModel: BaseView
                                     onClick = { showMenu = false })
                                 DropdownMenuItem(text = { Text("Settings") }, onClick = {
                                     showMenu = false
-                                    navHostController.navigate(Routes.SettingScreen)})
+                                    navHostController.navigate(Routes.SettingScreen)
+                                })
+                                DropdownMenuItem(
+                                    text = { Text("Logout") },
+                                    onClick = {
+                                        showMenu = false
+                                        FirebaseAuth.getInstance().signOut()
+                                        navHostController.navigate(Routes.WelcomeScreen) {
+                                            popUpTo(Routes.HomeScreen) { inclusive = true }
+                                        }
+                                    }
+                                )
 
                             }
                         }

@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -21,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.google.firebase.auth.FirebaseAuth
 import com.insanoid.whatsapp.R
 import com.insanoid.whatsapp.presentation.navigation.Routes
 import kotlinx.coroutines.delay
@@ -28,14 +30,20 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(navHostController: NavHostController){
+    val context = LocalContext.current
+    val firebaseUser = FirebaseAuth.getInstance().currentUser
+
     LaunchedEffect(Unit){
-        delay(1000)
-        navHostController.navigate(Routes.WelcomeScreen){
-            popUpTo<Routes.SplashScreen>{
-                inclusive = true
+        delay(2000)
+        if (firebaseUser != null) {
+            navHostController.navigate(Routes.HomeScreen) {
+                popUpTo(Routes.SplashScreen) { inclusive = true }
+            }
+        } else {
+            navHostController.navigate(Routes.WelcomeScreen) {
+                popUpTo(Routes.SplashScreen) { inclusive = true }
             }
         }
-
     }
 
     Box(modifier = Modifier
