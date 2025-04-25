@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.DoneAll
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -49,6 +50,32 @@ import com.insanoid.whatsapp.presentation.chat.ChatViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
+
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+
+
+// Define color scheme constants
+private val WhatsAppGreen = Color(0xFF128C7E)
+private val WhatsAppLightGreen = Color(0xFF25D366)
+private val WhatsAppBackground = Color(0xFFECE5DD)
+private val WhatsAppBubbleOutgoing = Color(0xFFDCF8C6)
+private val WhatsAppBubbleIncoming = Color.White
+private val WhatsAppHeaderColor = Color(0xFF075E54)
 
 @Composable
 fun ChatScreen(
@@ -60,60 +87,19 @@ fun ChatScreen(
     val messages by viewModel.messages.collectAsState()
     var messageText by remember { mutableStateOf("") }
     val scrollState = rememberLazyListState()
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
 
-
+    // Handle screen scrolling when new messages are added
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             scrollState.animateScrollToItem(messages.size - 1)
         }
     }
 
-    LaunchedEffect(Unit) { // CHANGE 1: Use Unit instead of contactPhone
-        viewModel.initializeChat(
-
-            contactPhone
-        )
-    }
-
-
-    @Composable
-    fun ChatTopAppBar(
-        contactName: String,
-        contactPhone: String,
-        onBackClick: () -> Unit
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(40.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_back_arrow),
-                    contentDescription = "Back"
-                )
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = contactName,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = contactPhone,
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
-            }
-            IconButton(onClick = { /* Handle more options */ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_more_vert),
-                    contentDescription = "More options"
-                )
-            }
-        }
+    // Initialize chat with contact
+    LaunchedEffect(Unit) {
+        viewModel.initializeChat(contactPhone)
     }
 
     Scaffold(
@@ -125,86 +111,232 @@ fun ChatScreen(
             )
         },
         content = { padding ->
-            Column(
+            // Chat wallpaper background
+            Box(
                 modifier = Modifier
-                    .padding(padding)
                     .fillMaxSize()
-                    .background(Color(0xFFECE5DD))
+                    .background(WhatsAppBackground)
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    state = scrollState,
-                    contentPadding = PaddingValues(8.dp)
-                ) {
-                    items(messages, key = { it.timestamp }) { message ->
-                        MessageBubble(
-                            message = message,
-                            isCurrentUser = message.senderId == FirebaseAuth.getInstance().currentUser?.uid
-                        )
-                    }
-                }
+                // Optional: Add background wallpaper image
+                // Image(
+                //     painter = painterResource(id = R.drawable.chat_background),
+                //     contentDescription = null,
+                //     modifier = Modifier.fillMaxSize(),
+                //     contentScale = ContentScale.Crop,
+                //     alpha = 0.2f
+                // )
 
-                MessageInputField(
-                    messageText = messageText,
-                    onMessageChange = { messageText = it },
-                    // In your ChatScreen composable
-                    onSendMessage = {
-                        if (messageText.isNotBlank()) {
-                            // Send message
-                            viewModel.sendMessage(
-                                Message(
-                                    text = messageText,
-                                    senderId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
-                                    receiverId = contactPhone,
-                                    timestamp = System.currentTimeMillis()
-                                )
+                Column(
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize()
+                ) {
+                    // Chat date header
+                    ChatDateHeader("Today")
+
+                    // Message list
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        state = scrollState,
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(messages, key = { it.timestamp }) { message ->
+                            MessageBubble(
+                                message = message,
+                                isCurrentUser = message.senderId == FirebaseAuth.getInstance().currentUser?.uid,
+                                maxWidth = screenWidth * 0.75f
                             )
-                            messageText = ""
                         }
                     }
-                )
+
+                    // Input field
+                    MessageInputField(
+                        messageText = messageText,
+                        onMessageChange = { messageText = it },
+                        onSendMessage = {
+                            if (messageText.isNotBlank()) {
+                                viewModel.sendMessage(
+                                    Message(
+                                        text = messageText,
+                                        senderId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
+                                        receiverId = contactPhone,
+                                        timestamp = System.currentTimeMillis()
+                                    )
+                                )
+                                messageText = ""
+                            }
+                        }
+                    )
+                }
             }
         }
     )
 }
 
 @Composable
-fun MessageBubble(message: Message, isCurrentUser: Boolean) {
-    val bubbleColor = if (isCurrentUser) Color(0xFFDCF8C6) else Color.White
-    val alignment = if (isCurrentUser) Alignment.End else Alignment.Start
+fun ChatTopAppBar(
+    contactName: String,
+    contactPhone: String,
+    onBackClick: () -> Unit
+) {
+    Surface(
+        color = WhatsAppHeaderColor,
+        shadowElevation = 4.dp, modifier = Modifier.padding(horizontal = 0.dp, vertical = 36.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_back_arrow),
+                    contentDescription = "Back",
+                    tint = Color.White
+                )
+            }
+
+            // Contact profile picture
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color.LightGray)
+            ) {
+                // You can replace this with AsyncImage for loading actual profile photos
+                Text(
+                    text = contactName.first().toString(),
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = contactName,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "Online",  // You can replace with dynamic status
+                    fontSize = 12.sp,
+                    color = Color.LightGray,
+                    maxLines = 1
+                )
+            }
+
+            IconButton(onClick = { /* Handle video call */ }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.camrecorder),
+                    modifier = Modifier.size(28.dp),
+                    contentDescription = "Video Call",
+                    tint = Color.White
+                )
+            }
+
+            IconButton(onClick = { /* Handle voice call */ }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.add_call),
+                    contentDescription = "Call",
+                    tint = Color.White
+                )
+            }
+
+            IconButton(onClick = { /* Handle more options */ }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_more_vert),
+                    contentDescription = "More options",
+                    tint = Color.White
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ChatDateHeader(dateText: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White.copy(alpha = 0.8f)
+            ),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Text(
+                text = dateText,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
+        }
+    }
+}
+
+@Composable
+fun MessageBubble(message: Message, isCurrentUser: Boolean, maxWidth: androidx.compose.ui.unit.Dp) {
+    val bubbleColor = if (isCurrentUser) WhatsAppBubbleOutgoing else WhatsAppBubbleIncoming
+    val alignment = if (isCurrentUser) Alignment.CenterEnd else Alignment.CenterStart
+    val bubbleShape = if (isCurrentUser) {
+        RoundedCornerShape(16.dp, 0.dp, 16.dp, 16.dp)
+    } else {
+        RoundedCornerShape(0.dp, 16.dp, 16.dp, 16.dp)
+    }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        contentAlignment = alignment as Alignment
+            .padding(vertical = 2.dp),
+        contentAlignment = alignment
     ) {
-        Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(bubbleColor)
-                .padding(12.dp)
+        Card(
+            modifier = Modifier.widthIn(max = maxWidth),
+            colors = CardDefaults.cardColors(containerColor = bubbleColor),
+            shape = bubbleShape,
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
-            Text(
-                text = message.text,
-                color = Color.Black,
-                fontSize = 16.sp
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = SimpleDateFormat("hh:mm a", Locale.getDefault())
-                        .format(message.timestamp),
-                    color = Color.Gray,
-                    fontSize = 10.sp
+                    text = message.text,
+                    color = Color.Black,
+                    fontSize = 16.sp
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                MessageStatusIndicator(status = MessageStatus.SENT)
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = SimpleDateFormat("hh:mm a", Locale.getDefault())
+                            .format(message.timestamp),
+                        color = Color.Gray,
+                        fontSize = 10.sp
+                    )
+
+                    if (isCurrentUser) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        MessageStatusIndicator(status = MessageStatus.DELIVERED)
+                    }
+                }
             }
         }
     }
@@ -236,35 +368,118 @@ fun MessageInputField(
     onMessageChange: (String) -> Unit,
     onSendMessage: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .background(Color.White, RoundedCornerShape(24.dp))
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        TextField(
-            value = messageText,
-            onValueChange = onMessageChange,
-            modifier = Modifier.weight(1f),
-            placeholder = { Text("Type a message") },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                disabledContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            keyboardActions = KeyboardActions(onSend = { onSendMessage() })
-        )
+    val shouldShowSendButton = messageText.isNotBlank()
 
-        IconButton(onClick = onSendMessage) {
-            Icon(
-                painter = painterResource(R.drawable.ic_send),
-                contentDescription = "Send message",
-                tint = Color(0xFF075E54)
+    Surface(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 0.dp).height(62.dp),
+        color = Color.White,
+        shape = RoundedCornerShape(32.dp),
+        shadowElevation = 8.dp
+
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Emoji button
+            IconButton(
+                onClick = { /* Handle emoji picker */ },
+                modifier = Modifier.size(28.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.happiness),
+                    contentDescription = "Emoji",
+                    tint = Color.Gray
+                )
+            }
+
+            // Text field
+            TextField(
+                value = messageText,
+                onValueChange = onMessageChange,
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(42.dp)),
+                placeholder = { Text("Message", color = Color.Gray) },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    disabledContainerColor = Color.White,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    cursorColor = WhatsAppGreen
+                ),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                keyboardActions = KeyboardActions(onSend = { onSendMessage() }),
+                maxLines = 6
             )
+
+            // Attachment button
+            IconButton(
+                onClick = { /* Handle attachment */ },
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_attach_file_24),
+                    contentDescription = "Attach file",
+                    tint = Color.Gray
+                )
+            }
+
+            // Camera button
+            IconButton(
+                onClick = { /* Handle camera */ },
+                modifier = Modifier.size(30.dp).padding(start = 0.dp, end = 8.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.camera),
+                    contentDescription = "Camera",
+                    tint = Color.Gray
+                )
+            }
+
+            // Send or Voice button
+            AnimatedVisibility(
+                visible = shouldShowSendButton,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                IconButton(
+                    onClick = onSendMessage,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(WhatsAppGreen, CircleShape)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Send,
+                        contentDescription = "Send message",
+                        tint = Color.White
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = !shouldShowSendButton,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                IconButton(
+                    onClick = { /* Handle voice recording */ },
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(WhatsAppGreen, CircleShape)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Mic,
+                        contentDescription = "Voice message",
+                        tint = Color.White
+                    )
+                }
+            }
         }
     }
 }

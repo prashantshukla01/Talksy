@@ -51,7 +51,7 @@ fun SplashScreen(navHostController: NavHostController){
         .background(color = colorResource(R.color.white))){
         Image(painter = painterResource(id = R.drawable.talksy),
             contentDescription = null,
-            modifier = Modifier.size(288.dp )
+            modifier = Modifier.size(287.dp )
                 .align(Alignment.Center)
         )
         Column(modifier = Modifier.align(Alignment.BottomCenter), horizontalAlignment = Alignment.CenterHorizontally ) {

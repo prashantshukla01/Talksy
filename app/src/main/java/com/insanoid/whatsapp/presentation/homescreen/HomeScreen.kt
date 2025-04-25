@@ -14,6 +14,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.navigation.compose.currentBackStackEntryAsState
+
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -24,11 +28,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.insanoid.whatsapp.R
@@ -56,6 +63,30 @@ fun HomeScreen(navHostController: NavHostController, homeBaseViewModel: BaseView
     var showPopup by remember { mutableStateOf(false) }
     val chatData by homeBaseViewModel.chatList.collectAsState()
     val userId= FirebaseAuth.getInstance().currentUser?.uid
+    val lifecycleOwner = rememberUpdatedState(newValue = LocalLifecycleOwner.current)
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val homeScreenRoute = Routes.HomeScreen::class.qualifiedName
+
+    DisposableEffect(key1 = navBackStackEntry?.destination?.route) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME && currentRoute == homeScreenRoute) {
+                userId?.let {
+                    homeBaseViewModel.getChatForUser(it) {}
+                }
+            }
+
+        }
+
+        val lifecycle = lifecycleOwner.value.lifecycle
+        lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycle.removeObserver(observer)
+        }
+    }
+
+
 
     if (userId != null) {
         LaunchedEffect(userId) {
