@@ -32,7 +32,7 @@ fun CommunityItemDesign(communities: Communities){
         Spacer(modifier = Modifier.width(12.dp))
 
         Column {
-            Text(text = communities.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(text = communities.name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
             Text(text = communities.memberCount, fontSize = 14.sp, color = Color.Gray)
 
         }
