@@ -70,12 +70,12 @@ import androidx.compose.ui.text.style.TextOverflow
 
 
 // Define color scheme constants
-private val WhatsAppGreen = Color(0xFF128C7E)
+private val WhatsAppGreen = Color(0xFF273F4F)
 private val WhatsAppLightGreen = Color(0xFF25D366)
-private val WhatsAppBackground = Color(0xFFECE5DD)
-private val WhatsAppBubbleOutgoing = Color(0xFFDCF8C6)
+private val WhatsAppBackground = Color(0xFF94B4C1)
+private val WhatsAppBubbleOutgoing = Color(0xFFFFFBDE)
 private val WhatsAppBubbleIncoming = Color.White
-private val WhatsAppHeaderColor = Color(0xFF075E54)
+private val WhatsAppHeaderColor = Color(0xFF213448)
 
 @Composable
 fun ChatScreen(
