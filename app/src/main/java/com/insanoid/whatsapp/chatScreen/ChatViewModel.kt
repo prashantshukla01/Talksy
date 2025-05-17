@@ -13,6 +13,9 @@ import com.google.firebase.database.ValueEventListener
 import com.insanoid.whatsapp.chatScreen.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,12 +25,15 @@ class ChatViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
-    val messages = MutableStateFlow<List<Message>>(emptyList())
+    val messages: StateFlow<List<Message>> = _messages.asStateFlow()
 
     private var messagesRef: DatabaseReference? = null
     private var currentUserId: String? = null
     private var receiverId: String? = null
     private var eventListener: ChildEventListener? = null
+
+    private val existingKeys = mutableSetOf<String>()
+
 
     fun initializeChat(contactPhone: String) {
         currentUserId = FirebaseAuth.getInstance().currentUser?.uid
@@ -44,14 +50,28 @@ class ChatViewModel @Inject constructor(
         eventListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 Log.d("ChatDebug", "New message added: ${snapshot.value}")
+                val key = snapshot.key ?: return
                 viewModelScope.launch {
+                    // 1. Check for existing key first
+                    if (existingKeys.contains(key)) {
+                        Log.w("ChatDebug", "Duplicate key detected: $key")
+                        return@launch
+                    }
+
+                    // 2. Get message with proper key assignment
                     snapshot.getValue(Message::class.java)?.let { message ->
-                        // Fixed key assignment
-                        val messageWithKey = message.copy(snapshot.key ?: "")
-                        _messages.value = _messages.value + messageWithKey
+                        val messageWithKey = message.copy(key = key)
+
+                        // 3. Update state atomically
+                        _messages.update { currentMessages ->
+                            if (currentMessages.any { it.key == key }) currentMessages
+                            else currentMessages + messageWithKey
+                        }
+                        existingKeys.add(key)
                     }
                 }
             }
+
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 viewModelScope.launch {
@@ -66,7 +86,9 @@ class ChatViewModel @Inject constructor(
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
                 viewModelScope.launch {
-                    _messages.value = _messages.value.filterNot { it.key == snapshot.key }
+                    val key = snapshot.key ?: return@launch
+                    _messages.update { it.filterNot { msg -> msg.key == key } }
+                    existingKeys.remove(key)
                 }
             }
 
@@ -79,14 +101,29 @@ class ChatViewModel @Inject constructor(
     }
 
     fun sendMessage(message: Message) {
-        val chatId = listOf(message.senderId, message.receiverId).sorted().joinToString("_")
-        val messageRef = database.reference.child("chats/$chatId/messages").push()
+//        val chatId = listOf(message.senderId, message.receiverId).sorted().joinToString("_")
+//        val messageRef = database.reference.child("chats/$chatId/messages").push()
+        val chatId = getChatPath(message.senderId, message.receiverId)
+        val messagesRef = database.reference.child("chats/$chatId/messages")
+        val newMessageRef = messagesRef.push() // Generates unique key
 
-        val msgWithKey = message.copy(key = messageRef.key ?: "")
-        _messages.value = _messages.value + msgWithKey
+        val messageWithKey = message.copy(
+            key = newMessageRef.key ?: "",
+            timestamp = System.currentTimeMillis()
+        )
+        if (!existingKeys.contains(messageWithKey.key)) {
+            existingKeys.add(messageWithKey.key)
+            _messages.value = _messages.value + messageWithKey
+        }
 
         // ✅ 2. Send to Firebase
-        messageRef.setValue(msgWithKey)
+        newMessageRef.setValue(messageWithKey).addOnCompleteListener {
+            if (!it.isSuccessful) {
+                // Remove from local state if Firebase fails
+                _messages.value = _messages.value - messageWithKey
+                existingKeys.remove(messageWithKey.key)
+            }
+        }
     }
     fun getMessages(senderId: String, receiverId: String) {
         val chatId = listOf(senderId, receiverId).sorted().joinToString("_")

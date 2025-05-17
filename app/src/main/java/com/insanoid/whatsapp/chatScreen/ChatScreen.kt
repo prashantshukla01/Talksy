@@ -143,7 +143,11 @@ fun ChatScreen(
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(messages, key = { it.timestamp }) { message ->
+                        items( items = messages,
+                            key = { message ->
+                                // Use the Firebase-generated key
+                                message.key
+                            }) { message ->
                             MessageBubble(
                                 message = message,
                                 isCurrentUser = message.senderId == FirebaseAuth.getInstance().currentUser?.uid,
