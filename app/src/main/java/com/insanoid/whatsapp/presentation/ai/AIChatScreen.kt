@@ -79,7 +79,7 @@ fun AIChatScreen(navController: NavHostController) {
                                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                items(state.messages) { message ->
+                                items(state.messages,key = { it.timestamp }) { message ->
                                     MessageBubble(
                                         message = Message(
                                             text = message.text,

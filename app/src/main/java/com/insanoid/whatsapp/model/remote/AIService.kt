@@ -6,7 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface AIService {
-    @POST("/v1/chat")
+    @POST("chat/completions")
     suspend fun getAIResponse(
         @Body request: AIMessageRequest
     ): AIResponse

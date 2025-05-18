@@ -13,7 +13,7 @@ import kotlin.collections.plus
 
 @HiltViewModel
 class AIChatViewModel @Inject constructor(
-    private val apiService: AIService
+    private val aiService: AIService
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AIChatState())
@@ -21,41 +21,39 @@ class AIChatViewModel @Inject constructor(
 
     fun sendMessage(message: String) {
         viewModelScope.launch {
-            _state.update { currentState ->
-                currentState.copy(
-                    messages = currentState.messages + AIMessage(
-                        text = message,
-                        isUser = true
-                    ),
-                    isLoading = true,
-                    error = null
-                )
-            }
-
             try {
-                val response = apiService.getAIResponse(
+                // Add user message
+                _state.update { it.copy(
+                    messages = it.messages + AIMessage(message, true),
+                    isLoading = true
+                )}
+
+                // API call
+                val response = aiService.getAIResponse(
                     AIMessageRequest(
-                        message = message,
-                        context = "chat"
+                        messages = listOf(
+                            AIMessageRequest.Message(
+                                role = "user",
+                                content = message
+                            )
+                        ),
+                        model = "gpt-3.5-turbo"
                     )
                 )
 
-                _state.update { currentState ->
-                    currentState.copy(
-                        messages = currentState.messages + AIMessage(
-                            text = response.answer,
-                            isUser = false
-                        ),
-                        isLoading = false
-                    )
-                }
+                // Add AI response
+                _state.update { it.copy(
+                    messages = it.messages + AIMessage(
+                        text = response.choices.first().message.content,
+                        isUser = false
+                    ),
+                    isLoading = false
+                )}
             } catch (e: Exception) {
-                _state.update { currentState ->
-                    currentState.copy(
-                        isLoading = false,
-                        error = "Failed to get response: ${e.localizedMessage}"
-                    )
-                }
+                _state.update { it.copy(
+                    error = "Failed to get response: ${e.message}",
+                    isLoading = false
+                )}
             }
         }
     }

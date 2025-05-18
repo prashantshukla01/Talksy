@@ -97,19 +97,15 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
 
     implementation ("androidx.compose.material:material-icons-extended:1.7.8")
-    implementation ("androidx.compose.ui:ui-text:1.7.8")
-    implementation ("androidx.compose.runtime:runtime-livedata:1.7.8")
-    implementation ("androidx.compose.ui:ui-tooling-preview:1.7.8")
+    implementation ("androidx.compose.ui:ui-text:1.8.1")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.8.1")
+    implementation ("androidx.compose.ui:ui-tooling-preview:1.8.1")
     implementation ("androidx.compose:compose-bom:2025.04.00")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
-    implementation ("com.google.code.gson:gson:2.8.9")
-
-
-
-
-
+    implementation ("com.google.code.gson:gson:2.10.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
 }

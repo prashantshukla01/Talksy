@@ -1,10 +1,14 @@
 package com.insanoid.whatsapp.di
 
+
+import com.insanoid.whatsapp.BuildConfig
 import com.insanoid.whatsapp.model.remote.AIService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -15,11 +19,33 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideAIService(): AIService {
-        return Retrofit.Builder()
-            .baseUrl("https://your-ai-api.com/") // Replace with actual API URL
-            .addConverterFactory(GsonConverterFactory.create())
+    fun provideOkHttpClient(): OkHttpClient {
+        val logging = HttpLoggingInterceptor().apply {
+            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
+            else HttpLoggingInterceptor.Level.NONE
+        }
+
+        return OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .addHeader("Authorization", "Bearer ${BuildConfig.AI_API_KEY}")
+                    .build()
+                chain.proceed(request)
+            }
             .build()
-            .create(AIService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(client: OkHttpClient): Retrofit = Retrofit.Builder()
+        .baseUrl("https://api.openai.com/v1/") // Use actual API URL
+        .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    @Provides
+    @Singleton
+    fun provideAIService(retrofit: Retrofit): AIService =
+        retrofit.create(AIService::class.java)
 }
