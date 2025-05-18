@@ -42,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -51,7 +50,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.insanoid.whatsapp.R
 import com.insanoid.whatsapp.presentation.bottomnavigate.BottomNavigation
 import com.insanoid.whatsapp.presentation.bottomnavigation.chat_box.chatlistModel
-import com.insanoid.whatsapp.presentation.communities.communitiesScreen
 import com.insanoid.whatsapp.presentation.navigation.Routes
 import com.insanoid.whatsapp.presentation.viewmodel.BaseViewModel
 import java.text.SimpleDateFormat
@@ -258,16 +256,24 @@ fun HomeScreen(navHostController: NavHostController, homeBaseViewModel: BaseView
                     homeBaseViewModel.addChat(newUser)
                 }, baseViewModel =  homeBaseViewModel)
             }
+
             LazyColumn(modifier = Modifier.fillMaxWidth()){
-                items(chatData){ chat ->
-                    ChatDesign(chatlistModel= chat, onClick = {
+                item {
+                    AIChatBar(
+                        onClick = { navHostController.navigate("aiChat") },
+                        baseViewModel = homeBaseViewModel
+                    )
+                }
+                items(chatData){
+                    chat ->
+                    ChatDesign(chatlistModel = chat, onClick = {
                         navHostController.navigate(
                             Routes.ChatScreen.createRoute(
                                 chat.name ?: "Unknown",
                                 chat.phoneNumber ?: ""
                             )
                         )
-                    },baseViewModel= homeBaseViewModel)
+                    }, baseViewModel = homeBaseViewModel)
                 }
             }
         }

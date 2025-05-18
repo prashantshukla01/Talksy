@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.insanoid.whatsapp.chatScreen.ChatScreen
 import com.insanoid.whatsapp.presentation.Callscreen.CallScreen
+import com.insanoid.whatsapp.presentation.ai.AIChatScreen
 import com.insanoid.whatsapp.presentation.communities.communitiesScreen
 import com.insanoid.whatsapp.presentation.homescreen.HomeScreen
 import com.insanoid.whatsapp.presentation.profile.UserProfileSetScreen
@@ -30,6 +31,9 @@ fun WhatsAppNavigationSystem() {
         }
         composable<Routes.UserRegistrationScreen> {
             UserRegistrationScreen( navController)
+        }
+        composable("aiChat") {
+            AIChatScreen(navController) // Make sure AIChatScreen is imported
         }
         composable<Routes.HomeScreen> {
             val baseViewModel: BaseViewModel = hiltViewModel()

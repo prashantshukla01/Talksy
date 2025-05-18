@@ -67,6 +67,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import com.insanoid.whatsapp.presentation.bottomnavigation.chat_box.chatlistModel
+import com.insanoid.whatsapp.presentation.homescreen.ChatDesign
+import com.insanoid.whatsapp.presentation.viewmodel.BaseViewModel
 
 
 // Define color scheme constants

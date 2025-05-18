@@ -1,11 +1,18 @@
 import org.gradle.kotlin.dsl.implementation
+import java.util.Properties
+
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use {
+        load(it)
+    }
+}
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     kotlin("plugin.serialization") version "2.1.20"
-    id ("com.google.dagger.hilt.android")
+    id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
     alias(libs.plugins.google.gms.google.services)
 }
@@ -15,6 +22,11 @@ android {
     compileSdk = 35
 
     defaultConfig {
+        buildConfigField(
+            "String",
+            "AI_API_KEY",
+            "\"${localProperties.getProperty("AI_API_KEY", "")}\""
+        )
         applicationId = "com.insanoid.whatsapp"
         minSdk = 24
         targetSdk = 35
@@ -24,6 +36,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Rest of your existing android configuration remains the same...
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -41,9 +54,11 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
+
 
 dependencies {
 
@@ -87,6 +102,10 @@ dependencies {
     implementation ("androidx.compose.ui:ui-tooling-preview:1.7.8")
     implementation ("androidx.compose:compose-bom:2025.04.00")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
+    implementation ("com.google.code.gson:gson:2.8.9")
 
 
 
